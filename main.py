@@ -1,6 +1,7 @@
 from asyncio import constants
 import pygame
 from constants import *
+from helpers import *
 from character import Character
 
 pygame.init()
@@ -17,11 +18,21 @@ moving_right = False
 moving_up = False
 moving_down = False
 
-# Load player image
-player_image = pygame.image.load()
+# Load player animation
+animation_types = ["IDLE", "WALK"]
+animation_list = []
+for animation in animation_types:
+    # Reset temp list of images
+    temp_list = []
+    for i in range(10):
+        image = pygame.image.load(
+            f"assets/sprites/Heroes/{animation}/Fairy_01__{animation}_00{i}.png").convert_alpha()
+        image = scale_image(image, SCALE)
+        temp_list.append(image)
+    animation_list.append(temp_list)
 
 # Create player
-player = Character(100, 100)
+player = Character(100, 100, animation_list)
 
 # Create the game loop
 run = True
@@ -45,6 +56,9 @@ while run:
 
     # Move player
     player.move(dx, dy)
+
+    # Update player
+    player.update()
 
     # Draw player on screen
     player.draw(screen)
