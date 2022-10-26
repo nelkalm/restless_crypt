@@ -14,6 +14,7 @@ class Character():
         self._frame_index = 0
         self._action = 0    # 0 = idle, 1 = running
         self._update_time = pygame.time.get_ticks()
+        self._running = False
         self._image = animation_list[self._action][self._frame_index]
         self._flip = False
 
@@ -34,6 +35,11 @@ class Character():
             dx (int): character's change in x position
             dy (int): character's change in y position
         """
+        self._running = False
+
+        if dx != 0 or dy != 0:
+            self._running = True
+
         if dx < 0:
             self._flip = True
         if dx > 0:
@@ -49,6 +55,14 @@ class Character():
 
     def update(self):
         """Updates character sprites to generate animation."""
+
+        # Check what action player is performing
+        # 1: running, 0: idle
+        if self._running == True:
+            self.update_action(1)
+        else:
+            self.update_action(0)
+
         animation_cooldown = 35
         # Handle animation and update image
         self._image = self._animation_list[self._action][self._frame_index]
@@ -59,3 +73,13 @@ class Character():
         # Check if animation has finished
         if self._frame_index >= len(self._animation_list[self._action]):
             self._frame_index = 0
+
+    def update_action(self, new_action):
+        """Updates character action for animation."""
+        # Check if the new action is different to the previous one
+        if new_action != self._action:
+            self._action = new_action
+
+            # update animation settings
+            self._frame_index = 0
+            self._update_time = pygame.time.get_ticks()
