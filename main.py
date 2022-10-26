@@ -17,6 +17,9 @@ moving_right = False
 moving_up = False
 moving_down = False
 
+# Load player image
+player_image = pygame.image.load()
+
 # Create player
 player = Character(100, 100)
 
