@@ -20,7 +20,11 @@ moving_up = False
 moving_down = False
 
 # Load weapon image
-bow_image = pygame.image.load("assets/sprites/Weapons/bow.png").convert_alpha()
+weapon_image = scale_image(pygame.image.load(
+    "assets/sprites/Weapons/Empty.png").convert_alpha(), WEAPON_SCALE)
+
+magic_ball_image = scale_image(pygame.image.load(
+    "assets/sprites/Weapons/magic_ball.png").convert_alpha(), MAGIC_SCALE)
 
 # Load character images
 mob_animations = []
@@ -63,7 +67,10 @@ for mob in main_types:
 player = Character(100, 100, mob_animations, 6)
 
 # Create weapon
-bow = Weapon(bow_image)
+weapon = Weapon(weapon_image, magic_ball_image)
+
+# Create sprite groups
+magic_ball_group = pygame.sprite.Group()
 
 # Create the game loop
 run = True
@@ -90,11 +97,17 @@ while run:
 
     # Update player
     player.update()
-    # bow.update(player)
+    magic_ball = weapon.update(player)
+    if magic_ball:
+        magic_ball_group.add(magic_ball)
+    for magic_ball in magic_ball_group:
+        magic_ball.update()
 
     # Draw player on screen
     player.draw(screen)
-    # bow.draw(screen)
+    weapon.draw(screen)
+    for magic_ball in magic_ball_group:
+        magic_ball.draw(screen)
 
     # Event handling for clicking
     for event in pygame.event.get():
