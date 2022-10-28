@@ -3,6 +3,7 @@ import pygame
 from constants import *
 from helpers import *
 from character import Character
+from weapon import Weapon
 
 pygame.init()
 
@@ -17,6 +18,9 @@ moving_left = False
 moving_right = False
 moving_up = False
 moving_down = False
+
+# Load weapon image
+bow_image = pygame.image.load("assets/sprites/Weapons/bow.png").convert_alpha()
 
 # Load character images
 mob_animations = []
@@ -58,6 +62,9 @@ for mob in main_types:
 # Create player
 player = Character(100, 100, mob_animations, 6)
 
+# Create weapon
+bow = Weapon(bow_image)
+
 # Create the game loop
 run = True
 while run:
@@ -83,9 +90,11 @@ while run:
 
     # Update player
     player.update()
+    # bow.update(player)
 
     # Draw player on screen
     player.draw(screen)
+    # bow.draw(screen)
 
     # Event handling for clicking
     for event in pygame.event.get():

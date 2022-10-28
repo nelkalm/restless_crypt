@@ -15,4 +15,5 @@ BG = (40, 25, 25)
 # Main character sprites rescale
 # MAIN_CHAR_WIDTH = 200
 # MAIN_CHAR_HEIGHT = 120
-SCALE = 0.2
+SCALE = 0.15
+OFFSET = 300

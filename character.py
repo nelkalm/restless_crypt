@@ -19,6 +19,10 @@ class Character():
         self._image = self._animation_list[self._action][self._frame_index]
         self._flip = False
 
+    def get_rectangle_center(self):
+        """Returns the center of the rectangle."""
+        return self._rectangle.center
+
     def draw(self, surface):
         """Draw the rectangle onto the screen.
 
@@ -26,7 +30,11 @@ class Character():
             surface (object): the shape to be drawn on the screen
         """
         flipped_image = pygame.transform.flip(self._image, self._flip, False)
-        surface.blit(flipped_image, self._rectangle)
+        if self._character_type == 6:
+            surface.blit(flipped_image, (self._rectangle.x - OFFSET * SCALE - 50,
+                         self._rectangle.y - OFFSET * SCALE))
+        else:
+            surface.blit(flipped_image, self._rectangle)
         pygame.draw.rect(surface, RED, self._rectangle, 1)
 
     def move(self, dx, dy):
