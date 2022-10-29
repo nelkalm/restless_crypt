@@ -7,7 +7,7 @@ class Character():
 
     """A character class representing a character object."""
 
-    def __init__(self, x, y, mob_animations, character_type) -> None:
+    def __init__(self, x, y, health, mob_animations, character_type) -> None:
         self._rectangle = pygame.Rect(0, 0, 50, 50)
         self._rectangle.center = (x, y)
         self._character_type = character_type
@@ -16,12 +16,35 @@ class Character():
         self._action = 0    # 0 = idle, 1 = running
         self._update_time = pygame.time.get_ticks()
         self._running = False
+        self._health = health
+        self._alive = True
         self._image = self._animation_list[self._action][self._frame_index]
         self._flip = False
 
     def get_rectangle_center(self):
         """Returns the center of the rectangle."""
         return self._rectangle.center
+
+    def get_rectangle(self):
+        """Returns the rectangle of the Character."""
+        return self._rectangle
+
+    def get_alive(self):
+        """Returns the alive status of the Character."""
+        return self._alive
+
+    def get_health(self):
+        """Returns health of the Character."""
+        return self._health
+
+    def set_health(self, value):
+        """Sets the health of the character."""
+        if value < 0:
+            self._health += value
+        elif value > 0:
+            self._health -= value
+        else:
+            self._health = value
 
     def draw(self, surface):
         """Draw the rectangle onto the screen.
@@ -64,6 +87,10 @@ class Character():
 
     def update(self):
         """Updates character sprites to generate animation."""
+        # Check if character has died
+        if self._health <= 0:
+            self._health = 0
+            self._alive = False
 
         # Check what action player is performing
         # 1: running, 0: idle

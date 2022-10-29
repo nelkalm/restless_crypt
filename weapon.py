@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 from constants import *
 
 
@@ -73,7 +74,7 @@ class MagicBall(pygame.sprite.Sprite):
         surface.blit(self._image, ((self._rectangle.centerx - int(self._image.get_width()/2)),
                      self._rectangle.centery - int(self._image.get_height()/2)))
 
-    def update(self):
+    def update(self, enemy_list):
         """Updates magic ball animation."""
 
         # Repositioning based on speed
@@ -83,3 +84,11 @@ class MagicBall(pygame.sprite.Sprite):
         # Check if magic ball goes off screen
         if self._rectangle.right < 0 or self._rectangle.left > SCREEN_WIDTH or self._rectangle.bottom < 0 or self._rectangle.top > SCREEN_HEIGHT:
             self.kill()
+
+        # Check collision between magicball and enemies
+        for enemy in enemy_list:
+            if enemy.get_rectangle().colliderect(self._rectangle) and enemy.get_alive():
+                damage = 10 + random.randint(-5, 5)
+                enemy.set_health(-damage)
+                self.kill()
+                break

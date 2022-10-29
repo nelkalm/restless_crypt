@@ -64,13 +64,20 @@ for mob in main_types:
     mob_animations.append(animation_list)
 
 # Create player
-player = Character(100, 100, mob_animations, 6)
+player = Character(100, 100, 100, mob_animations, 6)
 
 # Create weapon
 weapon = Weapon(weapon_image, magic_ball_image)
 
 # Create sprite groups
 magic_ball_group = pygame.sprite.Group()
+
+# Create enemy
+enemy = Character(200, 300, 100, mob_animations, 0)
+
+# Create empty enemy list
+enemy_list = []
+enemy_list.append(enemy)
 
 # Create the game loop
 run = True
@@ -101,13 +108,23 @@ while run:
     if magic_ball:
         magic_ball_group.add(magic_ball)
     for magic_ball in magic_ball_group:
-        magic_ball.update()
+        magic_ball.update(enemy_list)
 
     # Draw player on screen
     player.draw(screen)
     weapon.draw(screen)
     for magic_ball in magic_ball_group:
         magic_ball.draw(screen)
+
+    # Update enemies
+    for enemy in enemy_list:
+        enemy.update()
+
+    # Draw enemies on screeen
+    for enemy in enemy_list:
+        enemy.draw(screen)
+
+    print(enemy.get_health())
 
     # Event handling for clicking
     for event in pygame.event.get():
