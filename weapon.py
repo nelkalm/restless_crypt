@@ -76,6 +76,9 @@ class MagicBall(pygame.sprite.Sprite):
 
     def update(self, enemy_list):
         """Updates magic ball animation."""
+        # reset variables
+        damage = 0
+        damage_position = None
 
         # Repositioning based on speed
         self._rectangle.x += self._dx
@@ -89,6 +92,9 @@ class MagicBall(pygame.sprite.Sprite):
         for enemy in enemy_list:
             if enemy.get_rectangle().colliderect(self._rectangle) and enemy.get_alive():
                 damage = 10 + random.randint(-5, 5)
+                damage_position = enemy.get_rectangle()
                 enemy.set_health(-damage)
                 self.kill()
                 break
+
+        return damage, damage_position

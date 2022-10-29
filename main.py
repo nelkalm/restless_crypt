@@ -10,8 +10,29 @@ pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("The Restless Crypt")
 
+font = pygame.font.Font("assets/fonts/AtariClassic.ttf", 20)
+
 # Create frame rate clock
 clock = pygame.time.Clock()
+
+
+class DamageText(pygame.sprite.Sprite):
+    """A class to represent damage text."""
+
+    def __init__(self, x, y, damage, color):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = font.render(damage, True, color)
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.counter = 0
+
+    def update(self) -> None:
+        """Move damage text up."""
+        self.rect.y -= 1
+        self.counter += 1
+        if self.counter > 30:
+            self.kill()
+
 
 # Define player movement
 moving_left = False
@@ -70,6 +91,7 @@ player = Character(100, 100, 100, mob_animations, 6)
 weapon = Weapon(weapon_image, magic_ball_image)
 
 # Create sprite groups
+damage_text_group = pygame.sprite.Group()
 magic_ball_group = pygame.sprite.Group()
 
 # Create enemy
@@ -108,7 +130,13 @@ while run:
     if magic_ball:
         magic_ball_group.add(magic_ball)
     for magic_ball in magic_ball_group:
-        magic_ball.update(enemy_list)
+        damage, damage_position = magic_ball.update(enemy_list)
+        if damage:
+            damage_text = DamageText(
+                damage_position.centerx, damage_position.y, str(damage), RED)
+            damage_text_group.add(damage_text)
+
+    damage_text_group.update()
 
     # Draw player on screen
     player.draw(screen)
@@ -123,6 +151,8 @@ while run:
     # Draw enemies on screeen
     for enemy in enemy_list:
         enemy.draw(screen)
+
+    damage_text_group.draw(screen)
 
     print(enemy.get_health())
 
