@@ -11,6 +11,7 @@ class Character():
         self._rectangle = pygame.Rect(0, 0, 50, 50)
         self._rectangle.center = (x, y)
         self._character_type = character_type
+        self._score = 0
         self._animation_list = mob_animations[character_type]
         self._frame_index = 0
         self._action = 0    # 0 = idle, 1 = running
@@ -20,6 +21,14 @@ class Character():
         self._alive = True
         self._image = self._animation_list[self._action][self._frame_index]
         self._flip = False
+
+    def get_score(self):
+        """Returns player score."""
+        return self._score
+
+    def set_score(self, value):
+        """Sets player score."""
+        self._score = value
 
     def get_rectangle_center(self):
         """Returns the center of the rectangle."""
@@ -38,13 +47,24 @@ class Character():
         return self._health
 
     def set_health(self, value):
-        """Sets the health of the character."""
-        if value < 0:
-            self._health += value
-        elif value > 0:
-            self._health -= value
-        else:
-            self._health = value
+        """Sets the health of the Character."""
+        self._health = value
+
+    def change_health(self, value):
+        """Changes the health of the Character.
+
+        Args:
+            value (int): value to increase
+        """
+        self._health += value
+
+    def increase_score(self, value):
+        """Increases the score of the Character.
+
+        Args:
+            value (int): value to increase
+        """
+        self._score += value
 
     def draw(self, surface):
         """Draw the rectangle onto the screen.
@@ -57,7 +77,8 @@ class Character():
             surface.blit(flipped_image, (self._rectangle.x - OFFSET * SCALE - 50,
                          self._rectangle.y - OFFSET * SCALE))
         else:
-            surface.blit(flipped_image, self._rectangle)
+            surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 125,
+                         self._rectangle.y + OFFSET * SCALE - 90))
         pygame.draw.rect(surface, RED, self._rectangle, 1)
 
     def move(self, dx, dy):

@@ -11,6 +11,8 @@ SPEED = 4
 # Color
 RED = (255, 0, 0)
 BG = (40, 25, 25)
+PANEL = (164, 92, 64)
+WHITE = (255, 255, 255)
 
 # Main character sprites rescale
 # MAIN_CHAR_WIDTH = 200
@@ -22,3 +24,8 @@ OFFSET = 300
 WEAPON_SCALE = 1.5
 MAGIC_SCALE = 0.075
 MAGIC_SPEED = 15
+
+ENEMY_SCALE = 0.5
+
+ITEM_SCALE = 3
+POTION_SCALE = 2

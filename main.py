@@ -4,6 +4,7 @@ from constants import *
 from helpers import *
 from character import Character
 from weapon import Weapon
+from items import Item
 
 pygame.init()
 
@@ -47,6 +48,24 @@ weapon_image = scale_image(pygame.image.load(
 magic_ball_image = scale_image(pygame.image.load(
     "assets/sprites/Weapons/magic_ball.png").convert_alpha(), MAGIC_SCALE)
 
+# Load heart images
+heart_empty = scale_image(pygame.image.load(
+    "assets/sprites/Items/heart_empty.png").convert_alpha(), ITEM_SCALE)
+heart_half = scale_image(pygame.image.load(
+    "assets/sprites/Items/heart_half.png").convert_alpha(), ITEM_SCALE)
+heart_full = scale_image(pygame.image.load(
+    "assets/sprites/Items/heart_full.png").convert_alpha(), ITEM_SCALE)
+
+# Load in item images
+coin_images = []
+for i in range(4):
+    img = scale_image(pygame.image.load(
+        f"assets/sprites/Items/coin_f{i}.png").convert_alpha(), ITEM_SCALE)
+    coin_images.append(img)
+
+red_potion = scale_image(pygame.image.load(
+    "assets/sprites/Items/potion_red.png").convert_alpha(), POTION_SCALE)
+
 # Load character images
 mob_animations = []
 
@@ -66,7 +85,7 @@ for mob in mob_types:
         for i in range(1, 4):
             image = pygame.image.load(
                 f"assets/sprites/Characters/{mob}/{animation}/{animation}{i}.png").convert_alpha()
-            image = scale_image(image, SCALE)
+            image = scale_image(image, ENEMY_SCALE)
             temp_list.append(image)
         animation_list.append(temp_list)
     mob_animations.append(animation_list)
@@ -85,7 +104,7 @@ for mob in main_types:
     mob_animations.append(animation_list)
 
 # Create player
-player = Character(100, 100, 100, mob_animations, 6)
+player = Character(100, 100, 30, mob_animations, 6)
 
 # Create weapon
 weapon = Weapon(weapon_image, magic_ball_image)
@@ -93,6 +112,16 @@ weapon = Weapon(weapon_image, magic_ball_image)
 # Create sprite groups
 damage_text_group = pygame.sprite.Group()
 magic_ball_group = pygame.sprite.Group()
+
+# Create item group
+item_group = pygame.sprite.Group()
+potion = Item(200, 200, 1, [red_potion])
+item_group.add(potion)
+coin = Item(400, 400, 0, coin_images)
+item_group.add(coin)
+
+score_coin = Item(SCREEN_WIDTH - 115, 23, 0, coin_images)
+item_group.add(score_coin)
 
 # Create enemy
 enemy = Character(200, 300, 100, mob_animations, 0)
@@ -136,7 +165,11 @@ while run:
                 damage_position.centerx, damage_position.y, str(damage), RED)
             damage_text_group.add(damage_text)
 
+    # Update damage text
     damage_text_group.update()
+
+    # Update item
+    item_group.update(player)
 
     # Draw player on screen
     player.draw(screen)
@@ -152,9 +185,18 @@ while run:
     for enemy in enemy_list:
         enemy.draw(screen)
 
+    # Draw damage text
     damage_text_group.draw(screen)
 
-    print(enemy.get_health())
+    # print(enemy.get_health())
+
+    # Draw item group
+    item_group.draw(screen)
+
+    # Draw info
+    draw_heart_info(player, screen, heart_full, heart_half, heart_empty)
+    draw_text_info(player, font, screen)
+    score_coin.draw(screen)
 
     # Event handling for clicking
     for event in pygame.event.get():

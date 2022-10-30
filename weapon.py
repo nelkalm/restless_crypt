@@ -93,7 +93,7 @@ class MagicBall(pygame.sprite.Sprite):
             if enemy.get_rectangle().colliderect(self._rectangle) and enemy.get_alive():
                 damage = 10 + random.randint(-5, 5)
                 damage_position = enemy.get_rectangle()
-                enemy.set_health(-damage)
+                enemy.change_health(-damage)
                 self.kill()
                 break
 
