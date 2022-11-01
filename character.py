@@ -8,7 +8,7 @@ class Character():
     """A character class representing a character object."""
 
     def __init__(self, x, y, health, mob_animations, character_type) -> None:
-        self._rectangle = pygame.Rect(0, 0, 50, 50)
+        self._rectangle = pygame.Rect(0, 0, TILE_SIZE, TILE_SIZE)
         self._rectangle.center = (x, y)
         self._character_type = character_type
         self._score = 0
@@ -121,6 +121,8 @@ class Character():
             self.update_action(0)
 
         animation_cooldown = 35
+        if self._character_type != 6:
+            animation_cooldown = 150
         # Handle animation and update image
         self._image = self._animation_list[self._action][self._frame_index]
         # Check if enough time has passed since last update

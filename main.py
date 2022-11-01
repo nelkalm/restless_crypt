@@ -1,10 +1,11 @@
-from asyncio import constants
 import pygame
+import csv
 from constants import *
 from helpers import *
 from character import Character
 from weapon import Weapon
 from items import Item
+from world import World
 
 pygame.init()
 
@@ -15,6 +16,9 @@ font = pygame.font.Font("assets/fonts/AtariClassic.ttf", 20)
 
 # Create frame rate clock
 clock = pygame.time.Clock()
+
+# Define game variables
+level = 1
 
 
 class DamageText(pygame.sprite.Sprite):
@@ -66,6 +70,14 @@ for i in range(4):
 red_potion = scale_image(pygame.image.load(
     "assets/sprites/Items/potion_red.png").convert_alpha(), POTION_SCALE)
 
+# Load tilemap images
+tile_list = []
+for n in range(TILE_TYPES):
+    tile_image = pygame.image.load(
+        f'assets/sprites/tiles/{n}.png').convert_alpha()
+    tile_image = pygame.transform.scale(tile_image, (TILE_SIZE, TILE_SIZE))
+    tile_list.append(tile_image)
+
 # Load character images
 mob_animations = []
 
@@ -104,7 +116,7 @@ for mob in main_types:
     mob_animations.append(animation_list)
 
 # Create player
-player = Character(100, 100, 30, mob_animations, 6)
+player = Character(100, 100, 100, mob_animations, 6)
 
 # Create weapon
 weapon = Weapon(weapon_image, magic_ball_image)
@@ -130,6 +142,31 @@ enemy = Character(200, 300, 100, mob_animations, 0)
 enemy_list = []
 enemy_list.append(enemy)
 
+# Create empty tile list
+world_data = []
+for row in range(ROWS):
+    r = [-1] * COLS
+    world_data.append(r)
+
+# Load in level data and create world
+with open(f"levels/level{level}_data.csv", newline="") as csvfile:
+    reader = csv.reader(csvfile, delimiter=",")
+    for x, row in enumerate(reader):
+        for y, tile in enumerate(row):
+            world_data[x][y] = int(tile)
+
+world = World()
+world.process_data(world_data, tile_list)
+
+
+# def draw_grid():
+#     for x in range(30):
+#         pygame.draw.line(screen, WHITE, (x * TILE_SIZE, 0),
+#                          (x * TILE_SIZE, SCREEN_HEIGHT))
+#         pygame.draw.line(screen, WHITE, (0, x * TILE_SIZE),
+#                          (SCREEN_WIDTH, x * TILE_SIZE))
+
+
 # Create the game loop
 run = True
 while run:
@@ -137,6 +174,8 @@ while run:
     clock.tick(FPS)
 
     screen.fill(BG)
+
+    # draw_grid()
 
     # Positional update (x, y)
     dx = 0
@@ -170,6 +209,9 @@ while run:
 
     # Update item
     item_group.update(player)
+
+    # Draw the world
+    world.draw(screen)
 
     # Draw player on screen
     player.draw(screen)
