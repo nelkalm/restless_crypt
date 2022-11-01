@@ -74,15 +74,15 @@ class MagicBall(pygame.sprite.Sprite):
         surface.blit(self._image, ((self._rectangle.centerx - int(self._image.get_width()/2)),
                      self._rectangle.centery - int(self._image.get_height()/2)))
 
-    def update(self, enemy_list):
+    def update(self, screen_scroll, enemy_list):
         """Updates magic ball animation."""
         # reset variables
         damage = 0
         damage_position = None
 
         # Repositioning based on speed
-        self._rectangle.x += self._dx
-        self._rectangle.y += self._dy
+        self._rectangle.x += self._dx + screen_scroll[0]
+        self._rectangle.y += self._dy + screen_scroll[1]
 
         # Check if magic ball goes off screen
         if self._rectangle.right < 0 or self._rectangle.left > SCREEN_WIDTH or self._rectangle.bottom < 0 or self._rectangle.top > SCREEN_HEIGHT:

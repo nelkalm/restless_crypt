@@ -19,6 +19,7 @@ clock = pygame.time.Clock()
 
 # Define game variables
 level = 1
+screen_scroll = [0, 0]
 
 
 class DamageText(pygame.sprite.Sprite):
@@ -33,6 +34,11 @@ class DamageText(pygame.sprite.Sprite):
 
     def update(self) -> None:
         """Move damage text up."""
+
+        # Reposition based on screen scroll
+        self.rect.x += screen_scroll[0]
+        self.rect.y += screen_scroll[1]
+
         self.rect.y -= 1
         self.counter += 1
         if self.counter > 30:
@@ -116,7 +122,7 @@ for mob in main_types:
     mob_animations.append(animation_list)
 
 # Create player
-player = Character(100, 100, 100, mob_animations, 6)
+player = Character(400, 300, 100, mob_animations, 6)
 
 # Create weapon
 weapon = Weapon(weapon_image, magic_ball_image)
@@ -132,11 +138,11 @@ item_group.add(potion)
 coin = Item(400, 400, 0, coin_images)
 item_group.add(coin)
 
-score_coin = Item(SCREEN_WIDTH - 115, 23, 0, coin_images)
+score_coin = Item(SCREEN_WIDTH - 115, 23, 0, coin_images, True)
 item_group.add(score_coin)
 
 # Create enemy
-enemy = Character(200, 300, 100, mob_animations, 0)
+enemy = Character(300, 300, 100, mob_animations, 0)
 
 # Create empty enemy list
 enemy_list = []
@@ -190,15 +196,17 @@ while run:
         dy = SPEED
 
     # Move player
-    player.move(dx, dy)
+    screen_scroll = player.move(dx, dy)
 
-    # Update player
+    # Update all objects
+    world.update(screen_scroll)
+
     player.update()
     magic_ball = weapon.update(player)
     if magic_ball:
         magic_ball_group.add(magic_ball)
     for magic_ball in magic_ball_group:
-        damage, damage_position = magic_ball.update(enemy_list)
+        damage, damage_position = magic_ball.update(screen_scroll, enemy_list)
         if damage:
             damage_text = DamageText(
                 damage_position.centerx, damage_position.y, str(damage), RED)
@@ -208,7 +216,7 @@ while run:
     damage_text_group.update()
 
     # Update item
-    item_group.update(player)
+    item_group.update(screen_scroll, player)
 
     # Draw the world
     world.draw(screen)
@@ -221,6 +229,7 @@ while run:
 
     # Update enemies
     for enemy in enemy_list:
+        enemy.ai(screen_scroll)
         enemy.update()
 
     # Draw enemies on screeen

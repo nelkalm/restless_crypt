@@ -5,7 +5,7 @@ class Item(pygame.sprite.Sprite):
 
     """A class representing an Item."""
 
-    def __init__(self, x, y, item_type, animation_list) -> None:
+    def __init__(self, x, y, item_type, animation_list, dummy_coin=False) -> None:
         pygame.sprite.Sprite.__init__(self)
         self._item_type = item_type     # 0: coin, 1: health potion
         self._animation_list = animation_list
@@ -14,13 +14,19 @@ class Item(pygame.sprite.Sprite):
         self.image = self._animation_list[self._frame_index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self._dummy_coin = dummy_coin
 
-    def update(self, player) -> None:
+    def update(self, screen_scroll, player) -> None:
         """Updates item sprites to generate animation and handle collision.
 
         Args:
             player (object): the Player object
         """
+        if not self._dummy_coin:
+            # Reposition based on screen scroll
+            self.rect.x += screen_scroll[0]
+            self.rect.y += screen_scroll[1]
+
         animation_cooldown = 150
         self.image = self._animation_list[self._frame_index]
         # Check if enough time has passed since last update

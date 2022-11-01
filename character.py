@@ -88,6 +88,8 @@ class Character():
             dx (int): character's change in x position
             dy (int): character's change in y position
         """
+        screen_scroll = [0, 0]
+
         self._running = False
 
         if dx != 0 or dy != 0:
@@ -105,6 +107,29 @@ class Character():
 
         self._rectangle.x += dx
         self._rectangle.y += dy
+
+        # logic only applicable to player
+        if self._character_type == 6:
+            # update scroll based on player position
+            # move camera left and right
+            if self._rectangle.right > (SCREEN_WIDTH - SCROLL_THRES):
+                screen_scroll[0] = (
+                    SCREEN_WIDTH - SCROLL_THRES) - self._rectangle.right
+                self._rectangle.right = SCREEN_WIDTH - SCROLL_THRES
+            if self._rectangle.left < SCROLL_THRES:
+                screen_scroll[0] = SCROLL_THRES - self._rectangle.left
+                self._rectangle.left = SCROLL_THRES
+
+            # move camera up and down
+            if self._rectangle.bottom > (SCREEN_HEIGHT - SCROLL_THRES):
+                screen_scroll[1] = (
+                    SCREEN_HEIGHT - SCROLL_THRES) - self._rectangle.bottom
+                self._rectangle.bottom = SCREEN_HEIGHT - SCROLL_THRES
+            if self._rectangle.top < SCROLL_THRES:
+                screen_scroll[1] = SCROLL_THRES - self._rectangle.top
+                self._rectangle.top = SCROLL_THRES
+
+            return screen_scroll
 
     def update(self):
         """Updates character sprites to generate animation."""
@@ -142,3 +167,9 @@ class Character():
             # update animation settings
             self._frame_index = 0
             self._update_time = pygame.time.get_ticks()
+
+    def ai(self, screen_scroll):
+
+        # reposition enemies based on screen scroll
+        self._rectangle.x += screen_scroll[0]
+        self._rectangle.y += screen_scroll[1]

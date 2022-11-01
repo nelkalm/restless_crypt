@@ -1,5 +1,3 @@
-import enum
-
 from constants import TILE_SIZE
 
 
@@ -35,3 +33,10 @@ class World():
         """Draws the tile."""
         for tile in self._map_tiles:
             surface.blit(tile[0], tile[1])
+
+    def update(self, screen_scroll):
+        """Updates the map in the screen scroll."""
+        for tile in self._map_tiles:
+            tile[2] += screen_scroll[0]
+            tile[3] += screen_scroll[1]
+            tile[1].center = (tile[2], tile[3])
