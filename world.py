@@ -27,6 +27,10 @@ class World():
         """Returns the enemy list."""
         return self._enemy_list
 
+    def get_obstacle_tiles(self):
+        """Returns the obstacle tiles."""
+        return self._obstacle_tiles
+
     def process_data(self, data, tile_list, item_images, mob_animations):
         """Processes tile data.
 

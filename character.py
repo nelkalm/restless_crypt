@@ -94,7 +94,7 @@ class Character():
                          self._rectangle.y + OFFSET * ENEMY_SCALE - 250))
         pygame.draw.rect(surface, RED, self._rectangle, 1)
 
-    def move(self, dx, dy):
+    def move(self, dx, dy, obstacle_tiles):
         """Moves the character by updating the character's coordinates.
 
         Args:
@@ -118,8 +118,25 @@ class Character():
             dx = dx * (math.sqrt(2)/2)
             dy = dy * (math.sqrt(2)/2)
 
+        # Check collision with map in x direction
         self._rectangle.x += dx
+        for obstacle in obstacle_tiles:
+            if obstacle[1].colliderect(self._rectangle):
+                # check which side collision is from
+                if dx > 0:
+                    self._rectangle.right = obstacle[1].left
+                if dx < 0:
+                    self._rectangle.left = obstacle[1].right
+
+        # Check collision with map in y direction
         self._rectangle.y += dy
+        for obstacle in obstacle_tiles:
+            if obstacle[1].colliderect(self._rectangle):
+                # check which side collision is from
+                if dy > 0:
+                    self._rectangle.bottom = obstacle[1].top
+                if dy < 0:
+                    self._rectangle.top = obstacle[1].bottom
 
         # logic only applicable to player
         if self._character_type == 6:
