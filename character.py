@@ -7,10 +7,11 @@ class Character():
 
     """A character class representing a character object."""
 
-    def __init__(self, x, y, health, mob_animations, character_type) -> None:
-        self._rectangle = pygame.Rect(0, 0, TILE_SIZE, TILE_SIZE)
+    def __init__(self, x, y, health, mob_animations, character_type, boss, size) -> None:
+        self._rectangle = pygame.Rect(0, 0, TILE_SIZE * size, TILE_SIZE * size)
         self._rectangle.center = (x, y)
         self._character_type = character_type
+        self._boss = boss
         self._score = 0
         self._animation_list = mob_animations[character_type]
         self._frame_index = 0
@@ -74,11 +75,23 @@ class Character():
         """
         flipped_image = pygame.transform.flip(self._image, self._flip, False)
         if self._character_type == 6:
-            surface.blit(flipped_image, (self._rectangle.x - OFFSET * SCALE - 50,
+            surface.blit(flipped_image, (self._rectangle.x - OFFSET * SCALE - 25,
                          self._rectangle.y - OFFSET * SCALE))
+        elif self._character_type == 7:
+            surface.blit(flipped_image, (self._rectangle.x - OFFSET * BOSS_SCALE + 50,
+                         self._rectangle.y - OFFSET * BOSS_SCALE + 65))
+        elif self._character_type == 3:
+            surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 165,
+                         self._rectangle.y + OFFSET * ENEMY_SCALE - 300))
+        elif self._character_type == 1:
+            surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 150,
+                         self._rectangle.y + OFFSET * ENEMY_SCALE - 320))
+        elif self._character_type == 0:
+            surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 175,
+                         self._rectangle.y + OFFSET * ENEMY_SCALE - 300))
         else:
-            surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 125,
-                         self._rectangle.y + OFFSET * SCALE - 90))
+            surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 200,
+                         self._rectangle.y + OFFSET * ENEMY_SCALE - 250))
         pygame.draw.rect(surface, RED, self._rectangle, 1)
 
     def move(self, dx, dy):

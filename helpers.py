@@ -44,7 +44,10 @@ def draw_text(text, font, text_color, x, y, screen):
     screen.blit(img, (x, y))
 
 
-def draw_text_info(player, font, screen):
+def draw_text_info(player, font, screen, level):
     """Displays text onto the screen."""
+    draw_text("LEVEL: " + str(level), font,
+              WHITE, SCREEN_WIDTH / 2, 15, screen)
+
     draw_text(f"X{player.get_score()}",
               font, WHITE, SCREEN_WIDTH - 100, 15, screen)

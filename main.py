@@ -18,7 +18,7 @@ font = pygame.font.Font("assets/fonts/AtariClassic.ttf", 20)
 clock = pygame.time.Clock()
 
 # Define game variables
-level = 1
+level = 2
 screen_scroll = [0, 0]
 
 
@@ -76,6 +76,10 @@ for i in range(4):
 red_potion = scale_image(pygame.image.load(
     "assets/sprites/Items/potion_red.png").convert_alpha(), POTION_SCALE)
 
+item_images = []
+item_images.append(coin_images)
+item_images.append(red_potion)
+
 # Load tilemap images
 tile_list = []
 for n in range(TILE_TYPES):
@@ -116,37 +120,13 @@ for mob in main_types:
         for i in range(1, 11):
             image = pygame.image.load(
                 f"assets/sprites/Characters/{mob}/{animation}/{animation}{i}.png").convert_alpha()
-            image = scale_image(image, SCALE)
+            if mob == 'Heroes':
+                image = scale_image(image, SCALE)
+            elif mob == "boss_wraith":
+                image = scale_image(image, BOSS_SCALE)
             temp_list.append(image)
         animation_list.append(temp_list)
     mob_animations.append(animation_list)
-
-# Create player
-player = Character(400, 300, 100, mob_animations, 6)
-
-# Create weapon
-weapon = Weapon(weapon_image, magic_ball_image)
-
-# Create sprite groups
-damage_text_group = pygame.sprite.Group()
-magic_ball_group = pygame.sprite.Group()
-
-# Create item group
-item_group = pygame.sprite.Group()
-potion = Item(200, 200, 1, [red_potion])
-item_group.add(potion)
-coin = Item(400, 400, 0, coin_images)
-item_group.add(coin)
-
-score_coin = Item(SCREEN_WIDTH - 115, 23, 0, coin_images, True)
-item_group.add(score_coin)
-
-# Create enemy
-enemy = Character(300, 300, 100, mob_animations, 0)
-
-# Create empty enemy list
-enemy_list = []
-enemy_list.append(enemy)
 
 # Create empty tile list
 world_data = []
@@ -161,8 +141,42 @@ with open(f"levels/level{level}_data.csv", newline="") as csvfile:
         for y, tile in enumerate(row):
             world_data[x][y] = int(tile)
 
+# Create World
 world = World()
-world.process_data(world_data, tile_list)
+world.process_data(world_data, tile_list, item_images, mob_animations)
+
+# Create player
+# player = Character(400, 300, 100, mob_animations, 6)
+player = world.get_player()
+
+# Create weapon
+weapon = Weapon(weapon_image, magic_ball_image)
+
+# Create sprite groups
+damage_text_group = pygame.sprite.Group()
+magic_ball_group = pygame.sprite.Group()
+
+# Create item group
+item_group = pygame.sprite.Group()
+# potion = Item(200, 200, 1, [red_potion])
+# item_group.add(potion)
+# coin = Item(400, 400, 0, coin_images)
+# item_group.add(coin)
+
+# Add items from level data
+for item in world.get_item_list():
+    item_group.add(item)
+
+
+score_coin = Item(SCREEN_WIDTH - 115, 23, 0, coin_images, True)
+item_group.add(score_coin)
+
+# Create enemy
+# enemy = Character(300, 300, 100, mob_animations, 0)
+
+# Extract enemies from world data
+enemy_list = world.get_enemy_list()
+# enemy_list.append(enemy)
 
 
 # def draw_grid():
@@ -246,7 +260,7 @@ while run:
 
     # Draw info
     draw_heart_info(player, screen, heart_full, heart_half, heart_empty)
-    draw_text_info(player, font, screen)
+    draw_text_info(player, font, screen, level)
     score_coin.draw(screen)
 
     # Event handling for clicking
