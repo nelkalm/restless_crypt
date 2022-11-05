@@ -22,6 +22,9 @@ class Character():
         self._alive = True
         self._image = self._animation_list[self._action][self._frame_index]
         self._flip = False
+        self._hit = False
+        self._last_hit = pygame.time.get_ticks()
+        self._stunned = False
 
     def get_score(self):
         """Returns player score."""
@@ -30,6 +33,10 @@ class Character():
     def set_score(self, value):
         """Sets player score."""
         self._score = value
+
+    def set_hit(self, value):
+        """Sets hit to a boolean value."""
+        self._hit = value
 
     def get_rectangle_center(self):
         """Returns the center of the rectangle."""
@@ -168,6 +175,12 @@ class Character():
             self._health = 0
             self._alive = False
 
+        # timer to reset player taking a hit
+        hit_cooldown = 1000
+        if self._character_type == 6:
+            if self._hit == True and (pygame.time.get_ticks() - self._last_hit) > hit_cooldown:
+                self._hit = False
+
         # Check what action player is performing
         # 1: running, 0: idle
         if self._running == True:
@@ -198,8 +211,59 @@ class Character():
             self._frame_index = 0
             self._update_time = pygame.time.get_ticks()
 
-    def ai(self, screen_scroll):
+    def ai(self, player, obstacle_tiles, screen_scroll):
+        """Enables AI behaviors on enemies."""
+        clipped_line = ()
+
+        stun_cooldown = 100
+
+        ai_dx = 0
+        ai_dy = 0
 
         # reposition enemies based on screen scroll
         self._rectangle.x += screen_scroll[0]
         self._rectangle.y += screen_scroll[1]
+
+        # create line of sight from enemy to player
+        line_of_sight = ((self._rectangle.centerx, self._rectangle.centery),
+                         (player.get_rectangle().centerx, player.get_rectangle().centery))
+        # pygame.draw.line(surface, RED, line_of_sight[0], line_of_sight[1])
+        # check if line of sight passes through an obstacle tile
+        for obstacle in obstacle_tiles:
+            if obstacle[1].clipline(line_of_sight):
+                clipped_line = obstacle[1].clipline(line_of_sight)
+
+        # check distance to player
+        distance = math.sqrt(((self._rectangle.centerx - player.get_rectangle().centerx)
+                              ** 2) + ((self._rectangle.centery - player.get_rectangle().centery)**2))
+        if not clipped_line and distance > RANGE:
+            # move enemies toward player
+            if self._rectangle.centerx > player.get_rectangle().centerx:
+                ai_dx = -ENEMY_SPEED
+            if self._rectangle.centerx < player.get_rectangle().centerx:
+                ai_dx = ENEMY_SPEED
+            if self._rectangle.centery > player.get_rectangle().centery:
+                ai_dy = -ENEMY_SPEED
+            if self._rectangle.centery < player.get_rectangle().centery:
+                ai_dy = ENEMY_SPEED
+
+        if self._alive:
+            if not self._stunned:
+                # move towards player
+                self.move(ai_dx, ai_dy, obstacle_tiles)
+                # Attack player
+                if distance < ATTACK_RANGE and player._hit == False:
+                    player.change_health(-10)
+                    player.set_hit(True)
+                    player._last_hit = pygame.time.get_ticks()
+
+            # check if hit
+            if self._hit == True:
+                self._hit = False
+                self._last_hit = pygame.time.get_ticks()
+                self._stunned = True
+                self._running = False
+                self.update_action(0)
+
+            if (pygame.time.get_ticks() - self._last_hit > stun_cooldown):
+                self._stunned = False

@@ -18,7 +18,7 @@ font = pygame.font.Font("assets/fonts/AtariClassic.ttf", 20)
 clock = pygame.time.Clock()
 
 # Define game variables
-level = 2
+level = 1
 screen_scroll = [0, 0]
 
 
@@ -220,7 +220,8 @@ while run:
     if magic_ball:
         magic_ball_group.add(magic_ball)
     for magic_ball in magic_ball_group:
-        damage, damage_position = magic_ball.update(screen_scroll, enemy_list)
+        damage, damage_position = magic_ball.update(
+            screen_scroll, world.get_obstacle_tiles(), enemy_list)
         if damage:
             damage_text = DamageText(
                 damage_position.centerx, damage_position.y, str(damage), RED)
@@ -243,7 +244,7 @@ while run:
 
     # Update enemies
     for enemy in enemy_list:
-        enemy.ai(screen_scroll)
+        enemy.ai(player, world.get_obstacle_tiles(), screen_scroll)
         enemy.update()
 
     # Draw enemies on screeen
