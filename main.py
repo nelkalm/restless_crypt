@@ -18,7 +18,7 @@ font = pygame.font.Font("assets/fonts/AtariClassic.ttf", 20)
 clock = pygame.time.Clock()
 
 # Define game variables
-level = 1
+level = 3
 screen_scroll = [0, 0]
 
 
@@ -57,6 +57,9 @@ weapon_image = scale_image(pygame.image.load(
 
 magic_ball_image = scale_image(pygame.image.load(
     "assets/sprites/Weapons/magic_ball.png").convert_alpha(), MAGIC_SCALE)
+
+boss_magic_ball_image = scale_image(pygame.image.load(
+    "assets/sprites/Weapons/fireball.png").convert_alpha(), BOSS_BALL_SCALE)
 
 # Load heart images
 heart_empty = scale_image(pygame.image.load(
@@ -167,9 +170,11 @@ item_group = pygame.sprite.Group()
 for item in world.get_item_list():
     item_group.add(item)
 
-
 score_coin = Item(SCREEN_WIDTH - 115, 23, 0, coin_images, True)
 item_group.add(score_coin)
+
+# Create boss magic ball
+bossball_group = pygame.sprite.Group()
 
 # Create enemy
 # enemy = Character(300, 300, 100, mob_animations, 0)
@@ -244,8 +249,13 @@ while run:
 
     # Update enemies
     for enemy in enemy_list:
-        enemy.ai(player, world.get_obstacle_tiles(), screen_scroll)
-        enemy.update()
+        boss_ball = enemy.ai(player, world.get_obstacle_tiles(),
+                             screen_scroll, boss_magic_ball_image)
+        if boss_ball:
+            bossball_group.add(boss_ball)
+
+        if enemy.get_alive():
+            enemy.update()
 
     # Draw enemies on screeen
     for enemy in enemy_list:
@@ -253,6 +263,10 @@ while run:
 
     # Draw damage text
     damage_text_group.draw(screen)
+
+    bossball_group.update(screen_scroll, player)
+    for bossball in bossball_group:
+        bossball.draw(screen)
 
     # print(enemy.get_health())
 

@@ -1,5 +1,6 @@
 import pygame
 import math
+from weapon import BossBall, Weapon
 from constants import *
 
 
@@ -24,6 +25,7 @@ class Character():
         self._flip = False
         self._hit = False
         self._last_hit = pygame.time.get_ticks()
+        self._last_attack = pygame.time.get_ticks()
         self._stunned = False
 
     def get_score(self):
@@ -34,9 +36,17 @@ class Character():
         """Sets player score."""
         self._score = value
 
+    def get_hit(self):
+        """Returns player hit status."""
+        return self._hit
+
     def set_hit(self, value):
         """Sets hit to a boolean value."""
         self._hit = value
+
+    def set_last_hit(self, value):
+        """Sets last hit to a value."""
+        self._last_hit = value
 
     def get_rectangle_center(self):
         """Returns the center of the rectangle."""
@@ -99,7 +109,6 @@ class Character():
         else:
             surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 200,
                          self._rectangle.y + OFFSET * ENEMY_SCALE - 250))
-        pygame.draw.rect(surface, RED, self._rectangle, 1)
 
     def move(self, dx, dy, obstacle_tiles):
         """Moves the character by updating the character's coordinates.
@@ -211,8 +220,10 @@ class Character():
             self._frame_index = 0
             self._update_time = pygame.time.get_ticks()
 
-    def ai(self, player, obstacle_tiles, screen_scroll):
+    def ai(self, player, obstacle_tiles, screen_scroll, bossball_image):
         """Enables AI behaviors on enemies."""
+        bossball = None
+
         clipped_line = ()
 
         stun_cooldown = 100
@@ -257,6 +268,15 @@ class Character():
                     player.set_hit(True)
                     player._last_hit = pygame.time.get_ticks()
 
+                # boss enemy shoots bossball
+                boss_ball_cooldown = 700
+                if self._boss:
+                    if distance < 500:
+                        if pygame.time.get_ticks() - self._last_attack >= boss_ball_cooldown:
+                            bossball = BossBall(
+                                bossball_image, self._rectangle.centerx, self._rectangle.centery, player.get_rectangle().centerx, player.get_rectangle().centery)
+                            self._last_attack = pygame.time.get_ticks()
+
             # check if hit
             if self._hit == True:
                 self._hit = False
@@ -267,3 +287,5 @@ class Character():
 
             if (pygame.time.get_ticks() - self._last_hit > stun_cooldown):
                 self._stunned = False
+
+        return bossball

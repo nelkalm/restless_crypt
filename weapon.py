@@ -104,3 +104,45 @@ class MagicBall(pygame.sprite.Sprite):
                 break
 
         return damage, damage_position
+
+
+class BossBall(pygame.sprite.Sprite):
+
+    """An BossBall class inherited from the Pygame Sprite module."""
+
+    def __init__(self, image, x, y, target_x, target_y) -> None:
+        pygame.sprite.Sprite.__init__(self)
+        self._original_image = image
+        x_distance = target_x - x
+        y_distance = -(target_y - y)
+        self._angle = math.degrees(math.atan2(y_distance, x_distance))
+        self._image = pygame.transform.rotate(
+            self._original_image, self._angle)
+        self._rectangle = self._image.get_rect()
+        self._rectangle.center = (x, y)
+
+        # Calculate horizontal and vertical speed based on the angle
+        self._dx = math.cos(math.radians(self._angle)) * BOSS_BALL_SPEED
+        self._dy = -math.sin(math.radians(self._angle)) * BOSS_BALL_SPEED
+
+    def draw(self, surface):
+        """Draw the MagicBall."""
+        surface.blit(self._image, ((self._rectangle.centerx - int(self._image.get_width()/2)),
+                     self._rectangle.centery - int(self._image.get_height()/2)))
+
+    def update(self, screen_scroll, player):
+        """Updates magic ball animation."""
+        # Repositioning boss ball based on speed
+        self._rectangle.x += self._dx + screen_scroll[0]
+        self._rectangle.y += self._dy + screen_scroll[1]
+
+        # Check if boss ball goes off screen
+        if self._rectangle.right < 0 or self._rectangle.left > SCREEN_WIDTH or self._rectangle.bottom < 0 or self._rectangle.top > SCREEN_HEIGHT:
+            self.kill()
+
+        # Check collision between boss ball and player
+        if player.get_rectangle().colliderect(self._rectangle) and player.get_hit() == False:
+            player.set_hit(True)
+            player.set_last_hit(pygame.time.get_ticks())
+            player.change_health(-10)
+            self.kill()
