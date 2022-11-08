@@ -13,6 +13,7 @@ RED = (255, 0, 0)
 BG = (40, 25, 25)
 PANEL = (164, 92, 64)
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 # Main character sprites rescale
 # MAIN_CHAR_WIDTH = 200

@@ -9,8 +9,8 @@ class Character():
     """A character class representing a character object."""
 
     def __init__(self, x, y, health, mob_animations, character_type, boss, size) -> None:
-        self._rectangle = pygame.Rect(0, 0, TILE_SIZE * size, TILE_SIZE * size)
-        self._rectangle.center = (x, y)
+        self.rectangle = pygame.Rect(0, 0, TILE_SIZE * size, TILE_SIZE * size)
+        self.rectangle.center = (x, y)
         self._character_type = character_type
         self._boss = boss
         self._score = 0
@@ -50,11 +50,11 @@ class Character():
 
     def get_rectangle_center(self):
         """Returns the center of the rectangle."""
-        return self._rectangle.center
+        return self.rectangle.center
 
     def get_rectangle(self):
         """Returns the rectangle of the Character."""
-        return self._rectangle
+        return self.rectangle
 
     def get_alive(self):
         """Returns the alive status of the Character."""
@@ -92,23 +92,23 @@ class Character():
         """
         flipped_image = pygame.transform.flip(self._image, self._flip, False)
         if self._character_type == 6:
-            surface.blit(flipped_image, (self._rectangle.x - OFFSET * SCALE - 25,
-                         self._rectangle.y - OFFSET * SCALE))
+            surface.blit(flipped_image, (self.rectangle.x - OFFSET * SCALE - 25,
+                         self.rectangle.y - OFFSET * SCALE))
         elif self._character_type == 7:
-            surface.blit(flipped_image, (self._rectangle.x - OFFSET * BOSS_SCALE + 50,
-                         self._rectangle.y - OFFSET * BOSS_SCALE + 65))
+            surface.blit(flipped_image, (self.rectangle.x - OFFSET * BOSS_SCALE + 50,
+                         self.rectangle.y - OFFSET * BOSS_SCALE + 65))
         elif self._character_type == 3:
-            surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 165,
-                         self._rectangle.y + OFFSET * ENEMY_SCALE - 300))
+            surface.blit(flipped_image, (self.rectangle.x - OFFSET * ENEMY_SCALE + 165,
+                         self.rectangle.y + OFFSET * ENEMY_SCALE - 300))
         elif self._character_type == 1:
-            surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 150,
-                         self._rectangle.y + OFFSET * ENEMY_SCALE - 320))
+            surface.blit(flipped_image, (self.rectangle.x - OFFSET * ENEMY_SCALE + 150,
+                         self.rectangle.y + OFFSET * ENEMY_SCALE - 320))
         elif self._character_type == 0:
-            surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 175,
-                         self._rectangle.y + OFFSET * ENEMY_SCALE - 300))
+            surface.blit(flipped_image, (self.rectangle.x - OFFSET * ENEMY_SCALE + 175,
+                         self.rectangle.y + OFFSET * ENEMY_SCALE - 300))
         else:
-            surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 200,
-                         self._rectangle.y + OFFSET * ENEMY_SCALE - 250))
+            surface.blit(flipped_image, (self.rectangle.x - OFFSET * ENEMY_SCALE + 200,
+                         self.rectangle.y + OFFSET * ENEMY_SCALE - 250))
 
     def move(self, dx, dy, obstacle_tiles, exit_tile=None):
         """Moves the character by updating the character's coordinates.
@@ -137,54 +137,54 @@ class Character():
             dy = dy * (math.sqrt(2)/2)
 
         # Check collision with map in x direction
-        self._rectangle.x += dx
+        self.rectangle.x += dx
         for obstacle in obstacle_tiles:
-            if obstacle[1].colliderect(self._rectangle):
+            if obstacle[1].colliderect(self.rectangle):
                 # check which side collision is from
                 if dx > 0:
-                    self._rectangle.right = obstacle[1].left
+                    self.rectangle.right = obstacle[1].left
                 if dx < 0:
-                    self._rectangle.left = obstacle[1].right
+                    self.rectangle.left = obstacle[1].right
 
         # Check collision with map in y direction
-        self._rectangle.y += dy
+        self.rectangle.y += dy
         for obstacle in obstacle_tiles:
-            if obstacle[1].colliderect(self._rectangle):
+            if obstacle[1].colliderect(self.rectangle):
                 # check which side collision is from
                 if dy > 0:
-                    self._rectangle.bottom = obstacle[1].top
+                    self.rectangle.bottom = obstacle[1].top
                 if dy < 0:
-                    self._rectangle.top = obstacle[1].bottom
+                    self.rectangle.top = obstacle[1].bottom
 
         # logic only applicable to player
         if self._character_type == 6:
             # check collision with exit ladder
-            if exit_tile[1].colliderect(self._rectangle):
+            if exit_tile[1].colliderect(self.rectangle):
                 # ensure player is close to center of exit ladder
-                exit_dist = math.sqrt(((self._rectangle.centerx - exit_tile[1].centerx) ** 2) + (
-                    (self._rectangle.centery - exit_tile[1].centery) ** 2))
+                exit_dist = math.sqrt(((self.rectangle.centerx - exit_tile[1].centerx) ** 2) + (
+                    (self.rectangle.centery - exit_tile[1].centery) ** 2))
                 # print("exit")
                 if exit_dist < 20:
                     level_complete = True
 
             # update scroll based on player position
             # move camera left and right
-            if self._rectangle.right > (SCREEN_WIDTH - SCROLL_THRES):
+            if self.rectangle.right > (SCREEN_WIDTH - SCROLL_THRES):
                 screen_scroll[0] = (
-                    SCREEN_WIDTH - SCROLL_THRES) - self._rectangle.right
-                self._rectangle.right = SCREEN_WIDTH - SCROLL_THRES
-            if self._rectangle.left < SCROLL_THRES:
-                screen_scroll[0] = SCROLL_THRES - self._rectangle.left
-                self._rectangle.left = SCROLL_THRES
+                    SCREEN_WIDTH - SCROLL_THRES) - self.rectangle.right
+                self.rectangle.right = SCREEN_WIDTH - SCROLL_THRES
+            if self.rectangle.left < SCROLL_THRES:
+                screen_scroll[0] = SCROLL_THRES - self.rectangle.left
+                self.rectangle.left = SCROLL_THRES
 
             # move camera up and down
-            if self._rectangle.bottom > (SCREEN_HEIGHT - SCROLL_THRES):
+            if self.rectangle.bottom > (SCREEN_HEIGHT - SCROLL_THRES):
                 screen_scroll[1] = (
-                    SCREEN_HEIGHT - SCROLL_THRES) - self._rectangle.bottom
-                self._rectangle.bottom = SCREEN_HEIGHT - SCROLL_THRES
-            if self._rectangle.top < SCROLL_THRES:
-                screen_scroll[1] = SCROLL_THRES - self._rectangle.top
-                self._rectangle.top = SCROLL_THRES
+                    SCREEN_HEIGHT - SCROLL_THRES) - self.rectangle.bottom
+                self.rectangle.bottom = SCREEN_HEIGHT - SCROLL_THRES
+            if self.rectangle.top < SCROLL_THRES:
+                screen_scroll[1] = SCROLL_THRES - self.rectangle.top
+                self.rectangle.top = SCROLL_THRES
 
             return screen_scroll, level_complete
 
@@ -243,11 +243,11 @@ class Character():
         ai_dy = 0
 
         # reposition enemies based on screen scroll
-        self._rectangle.x += screen_scroll[0]
-        self._rectangle.y += screen_scroll[1]
+        self.rectangle.x += screen_scroll[0]
+        self.rectangle.y += screen_scroll[1]
 
         # create line of sight from enemy to player
-        line_of_sight = ((self._rectangle.centerx, self._rectangle.centery),
+        line_of_sight = ((self.rectangle.centerx, self.rectangle.centery),
                          (player.get_rectangle().centerx, player.get_rectangle().centery))
         # pygame.draw.line(surface, RED, line_of_sight[0], line_of_sight[1])
         # check if line of sight passes through an obstacle tile
@@ -256,17 +256,17 @@ class Character():
                 clipped_line = obstacle[1].clipline(line_of_sight)
 
         # check distance to player
-        distance = math.sqrt(((self._rectangle.centerx - player.get_rectangle().centerx)
-                              ** 2) + ((self._rectangle.centery - player.get_rectangle().centery)**2))
+        distance = math.sqrt(((self.rectangle.centerx - player.get_rectangle().centerx)
+                              ** 2) + ((self.rectangle.centery - player.get_rectangle().centery)**2))
         if not clipped_line and distance > RANGE:
             # move enemies toward player
-            if self._rectangle.centerx > player.get_rectangle().centerx:
+            if self.rectangle.centerx > player.get_rectangle().centerx:
                 ai_dx = -ENEMY_SPEED
-            if self._rectangle.centerx < player.get_rectangle().centerx:
+            if self.rectangle.centerx < player.get_rectangle().centerx:
                 ai_dx = ENEMY_SPEED
-            if self._rectangle.centery > player.get_rectangle().centery:
+            if self.rectangle.centery > player.get_rectangle().centery:
                 ai_dy = -ENEMY_SPEED
-            if self._rectangle.centery < player.get_rectangle().centery:
+            if self.rectangle.centery < player.get_rectangle().centery:
                 ai_dy = ENEMY_SPEED
 
         if self._alive:
@@ -285,7 +285,7 @@ class Character():
                     if distance < 500:
                         if pygame.time.get_ticks() - self._last_attack >= boss_ball_cooldown:
                             bossball = BossBall(
-                                bossball_image, self._rectangle.centerx, self._rectangle.centery, player.get_rectangle().centerx, player.get_rectangle().centery)
+                                bossball_image, self.rectangle.centerx, self.rectangle.centery, player.get_rectangle().centerx, player.get_rectangle().centery)
                             self._last_attack = pygame.time.get_ticks()
 
             # check if hit

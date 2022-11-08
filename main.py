@@ -6,6 +6,7 @@ from character import Character
 from weapon import Weapon
 from items import Item
 from world import World
+from screen_fade import ScreenFade
 
 pygame.init()
 
@@ -19,6 +20,7 @@ clock = pygame.time.Clock()
 
 # Define game variables
 level = 1
+start_intro = True
 screen_scroll = [0, 0]
 
 
@@ -170,6 +172,9 @@ item_group = pygame.sprite.Group()
 for item in world.get_item_list():
     item_group.add(item)
 
+# Create screen fades
+intro_fade = ScreenFade(1, BLACK, 4)
+
 score_coin = Item(SCREEN_WIDTH - 115, 23, 0, coin_images, True)
 item_group.add(score_coin)
 
@@ -281,6 +286,7 @@ while run:
 
     # Check level complete
     if level_complete is True:
+        start_intro = True
         level += 1
         world_data = reset_level(
             damage_text_group, magic_ball_group, item_group, bossball_group)
@@ -301,6 +307,12 @@ while run:
         item_group.add(score_coin)
         for item in world.get_item_list():
             item_group.add(item)
+
+    # Show intro
+    if start_intro == True:
+        if intro_fade.fade(screen):
+            start_intro = False
+            intro_fade.set_fade_counter(0)
 
     # Event handling for clicking
     for event in pygame.event.get():
