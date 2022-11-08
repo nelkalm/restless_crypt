@@ -172,8 +172,6 @@ item_group = pygame.sprite.Group()
 for item in world.get_item_list():
     item_group.add(item)
 
-# Create screen fades
-intro_fade = ScreenFade(1, BLACK, 4)
 
 score_coin = Item(SCREEN_WIDTH - 115, 23, 0, coin_images, True)
 item_group.add(score_coin)
@@ -196,6 +194,9 @@ enemy_list = world.get_enemy_list()
 #         pygame.draw.line(screen, WHITE, (0, x * TILE_SIZE),
 #                          (SCREEN_WIDTH, x * TILE_SIZE))
 
+# Create screen fades
+intro_fade = ScreenFade(1, BLACK, 4)
+death_fade = ScreenFade(2, PINK, 4)
 
 # Create the game loop
 run = True
@@ -207,42 +208,43 @@ while run:
 
     # draw_grid()
 
-    # Positional update (x, y)
-    dx = 0
-    dy = 0
-    if moving_right == True:
-        dx = SPEED
-    if moving_left == True:
-        dx = -SPEED
-    if moving_up == True:
-        dy = -SPEED
-    if moving_down == True:
-        dy = SPEED
+    if player.get_alive():
+        # Positional update (x, y)
+        dx = 0
+        dy = 0
+        if moving_right == True:
+            dx = SPEED
+        if moving_left == True:
+            dx = -SPEED
+        if moving_up == True:
+            dy = -SPEED
+        if moving_down == True:
+            dy = SPEED
 
-    # Move player
-    screen_scroll, level_complete = player.move(
-        dx, dy, world.get_obstacle_tiles(), world.get_exit_tile())
+        # Move player
+        screen_scroll, level_complete = player.move(
+            dx, dy, world.get_obstacle_tiles(), world.get_exit_tile())
 
-    # Update all objects
-    world.update(screen_scroll)
+        # Update all objects
+        world.update(screen_scroll)
 
-    player.update()
-    magic_ball = weapon.update(player)
-    if magic_ball:
-        magic_ball_group.add(magic_ball)
-    for magic_ball in magic_ball_group:
-        damage, damage_position = magic_ball.update(
-            screen_scroll, world.get_obstacle_tiles(), enemy_list)
-        if damage:
-            damage_text = DamageText(
-                damage_position.centerx, damage_position.y, str(damage), RED)
-            damage_text_group.add(damage_text)
+        player.update()
+        magic_ball = weapon.update(player)
+        if magic_ball:
+            magic_ball_group.add(magic_ball)
+        for magic_ball in magic_ball_group:
+            damage, damage_position = magic_ball.update(
+                screen_scroll, world.get_obstacle_tiles(), enemy_list)
+            if damage:
+                damage_text = DamageText(
+                    damage_position.centerx, damage_position.y, str(damage), RED)
+                damage_text_group.add(damage_text)
 
-    # Update damage text
-    damage_text_group.update()
+        # Update damage text
+        damage_text_group.update()
 
-    # Update item
-    item_group.update(screen_scroll, player)
+        # Update item
+        item_group.update(screen_scroll, player)
 
     # Draw the world
     world.draw(screen)
@@ -313,6 +315,30 @@ while run:
         if intro_fade.fade(screen):
             start_intro = False
             intro_fade.set_fade_counter(0)
+
+    # Show death screen
+    if player.get_alive() is False:
+        if death_fade.fade(screen):
+            death_fade.set_fade_counter(0)
+            start_intro = True
+            world_data = reset_level(
+                damage_text_group, magic_ball_group, item_group, bossball_group)
+            with open(f"levels/level{level}_data.csv", newline="") as csvfile:
+                reader = csv.reader(csvfile, delimiter=",")
+                for x, row in enumerate(reader):
+                    for y, tile in enumerate(row):
+                        world_data[x][y] = int(tile)
+            world = World()
+            world.process_data(world_data, tile_list,
+                               item_images, mob_animations)
+            temp_score = player.get_score()
+            player = world.get_player()
+            player.set_score(temp_score)
+            enemy_list = world.get_enemy_list()
+            score_coin = Item(SCREEN_WIDTH - 115, 23, 0, coin_images, True)
+            item_group.add(score_coin)
+            for item in world.get_item_list():
+                item_group.add(item)
 
     # Event handling for clicking
     for event in pygame.event.get():
