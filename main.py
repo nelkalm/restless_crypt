@@ -1,15 +1,15 @@
-from tracemalloc import start
 import pygame
 import csv
 from constants import *
 from helpers import *
-from character import Character
 from weapon import Weapon
 from items import Item
 from world import World
 from screen_fade import ScreenFade
 from button import Button
+from pygame import mixer
 
+mixer.init()
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -56,6 +56,21 @@ moving_left = False
 moving_right = False
 moving_up = False
 moving_down = False
+
+# Load music and sound
+pygame.mixer.music.load("assets/audio/music.wav")
+pygame.mixer.music.set_volume(0.3)
+pygame.mixer.music.play(-1, 0.0, 5000)
+
+# Load in sound effects
+shot_fx = pygame.mixer.Sound("assets/audio/magic_shot.mp3")
+shot_fx.set_volume(0.5)
+hit_fx = pygame.mixer.Sound("assets/audio/magic_hit.wav")
+hit_fx.set_volume(0.5)
+coin_fx = pygame.mixer.Sound("assets/audio/coin.wav")
+coin_fx.set_volume(0.5)
+heal_fx = pygame.mixer.Sound("assets/audio/heal.wav")
+heal_fx.set_volume(0.5)
 
 # Load weapon image
 weapon_image = scale_image(pygame.image.load(
@@ -275,6 +290,7 @@ while run:
                 magic_ball = weapon.update(player)
                 if magic_ball:
                     magic_ball_group.add(magic_ball)
+                    shot_fx.play()
                 for magic_ball in magic_ball_group:
                     damage, damage_position = magic_ball.update(
                         screen_scroll, world.get_obstacle_tiles(), enemy_list)
@@ -282,12 +298,13 @@ while run:
                         damage_text = DamageText(
                             damage_position.centerx, damage_position.y, str(damage), RED)
                         damage_text_group.add(damage_text)
+                        hit_fx.play()
 
                 # Update damage text
                 damage_text_group.update()
 
                 # Update item
-                item_group.update(screen_scroll, player)
+                item_group.update(screen_scroll, player, coin_fx, heal_fx)
 
             # Draw the world
             world.draw(screen)

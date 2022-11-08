@@ -16,7 +16,7 @@ class Item(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self._dummy_coin = dummy_coin
 
-    def update(self, screen_scroll, player) -> None:
+    def update(self, screen_scroll, player, coin_fx, heal_fx) -> None:
         """Updates item sprites to generate animation and handle collision.
 
         Args:
@@ -42,9 +42,11 @@ class Item(pygame.sprite.Sprite):
             # coin collected
             if self._item_type == 0:
                 player.increase_score(1)
+                coin_fx.play()
             # potion collected
             elif self._item_type == 1:
                 player.change_health(10)
+                heal_fx.play()
                 if player.get_health() > 100:
                     player.change_health(0)
             self.kill()
