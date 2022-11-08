@@ -110,13 +110,15 @@ class Character():
             surface.blit(flipped_image, (self._rectangle.x - OFFSET * ENEMY_SCALE + 200,
                          self._rectangle.y + OFFSET * ENEMY_SCALE - 250))
 
-    def move(self, dx, dy, obstacle_tiles):
+    def move(self, dx, dy, obstacle_tiles, exit_tile=None):
         """Moves the character by updating the character's coordinates.
 
         Args:
             dx (int): character's change in x position
             dy (int): character's change in y position
         """
+        level_complete = False
+
         screen_scroll = [0, 0]
 
         self._running = False
@@ -156,6 +158,15 @@ class Character():
 
         # logic only applicable to player
         if self._character_type == 6:
+            # check collision with exit ladder
+            if exit_tile[1].colliderect(self._rectangle):
+                # ensure player is close to center of exit ladder
+                exit_dist = math.sqrt(((self._rectangle.centerx - exit_tile[1].centerx) ** 2) + (
+                    (self._rectangle.centery - exit_tile[1].centery) ** 2))
+                # print("exit")
+                if exit_dist < 20:
+                    level_complete = True
+
             # update scroll based on player position
             # move camera left and right
             if self._rectangle.right > (SCREEN_WIDTH - SCROLL_THRES):
@@ -175,7 +186,7 @@ class Character():
                 screen_scroll[1] = SCROLL_THRES - self._rectangle.top
                 self._rectangle.top = SCROLL_THRES
 
-            return screen_scroll
+            return screen_scroll, level_complete
 
     def update(self):
         """Updates character sprites to generate animation."""

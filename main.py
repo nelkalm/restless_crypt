@@ -18,7 +18,7 @@ font = pygame.font.Font("assets/fonts/AtariClassic.ttf", 20)
 clock = pygame.time.Clock()
 
 # Define game variables
-level = 3
+level = 1
 screen_scroll = [0, 0]
 
 
@@ -215,7 +215,8 @@ while run:
         dy = SPEED
 
     # Move player
-    screen_scroll = player.move(dx, dy, world.get_obstacle_tiles())
+    screen_scroll, level_complete = player.move(
+        dx, dy, world.get_obstacle_tiles(), world.get_exit_tile())
 
     # Update all objects
     world.update(screen_scroll)
@@ -277,6 +278,29 @@ while run:
     draw_heart_info(player, screen, heart_full, heart_half, heart_empty)
     draw_text_info(player, font, screen, level)
     score_coin.draw(screen)
+
+    # Check level complete
+    if level_complete is True:
+        level += 1
+        world_data = reset_level(
+            damage_text_group, magic_ball_group, item_group, bossball_group)
+        with open(f"levels/level{level}_data.csv", newline="") as csvfile:
+            reader = csv.reader(csvfile, delimiter=",")
+            for x, row in enumerate(reader):
+                for y, tile in enumerate(row):
+                    world_data[x][y] = int(tile)
+        world = World()
+        world.process_data(world_data, tile_list, item_images, mob_animations)
+        temp_health = player.get_health()
+        temp_score = player.get_score()
+        player = world.get_player()
+        player.set_health(temp_health)
+        player.set_score(temp_score)
+        enemy_list = world.get_enemy_list()
+        score_coin = Item(SCREEN_WIDTH - 115, 23, 0, coin_images, True)
+        item_group.add(score_coin)
+        for item in world.get_item_list():
+            item_group.add(item)
 
     # Event handling for clicking
     for event in pygame.event.get():

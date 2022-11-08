@@ -15,6 +15,10 @@ class World():
         self._player = None
         self._enemy_list = []
 
+    def get_exit_tile(self):
+        """Returns the exit tile."""
+        return self._exit_tile
+
     def get_item_list(self):
         """Returns the item list."""
         return self._item_list

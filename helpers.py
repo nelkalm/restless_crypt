@@ -51,3 +51,18 @@ def draw_text_info(player, font, screen, level):
 
     draw_text(f"X{player.get_score()}",
               font, WHITE, SCREEN_WIDTH - 100, 15, screen)
+
+
+def reset_level(damage_text_group, magic_ball_group, item_group, boss_ball_group):
+    damage_text_group.empty()
+    magic_ball_group.empty()
+    item_group.empty()
+    boss_ball_group.empty()
+
+    # create empty tile list
+    data = []
+    for row in range(ROWS):
+        r = [-1] * COLS
+        data.append(r)
+
+    return data
