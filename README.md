@@ -6,6 +6,8 @@ Welcome to Restless Crypt, a game where the main character, a Fire Fairy, must e
 
 This project is a fleshed-out version of a simple shell-based game introduced in my first CS courses. Originally, the project scope did not involve Pygame; it was just a command-line user interaction with one main character and two enemies to demonstrate my understanding of object-oriented programming concepts. I took this project a step further by creating more enemies and items, including level files, implementing a GUI with event-based user-interaction, including sound and sound effects. 
 
+![Restless Crypt Game Overview](https://github.com/nelkalm/restless_crypt/blob/main/restless-crypt-gif/game-overview_AdobeExpress.gif)
+
 ## Development
 The diagram below shows the overall development structure to implement this game.
 
@@ -16,7 +18,18 @@ The main.py Python file takes in level data as csv files, and use them to constr
 The World object is initialized and then used to create Character objects: the main player, enemies, and the boss enemy. Each of these Characters can use objects initialized by the Weapon class. The Bossball object is used exclusively by the boss enemy; all its functionalities are inherited by the Weapon class. 
 
 ## Gameplay and Screenshots
-TBD
+
+Fire fairy magic balls at enemies:
+
+<img src="https://github.com/nelkalm/restless_crypt/blob/main/restless-crypt-gif/hitting-enemies_AdobeExpress.gif" width="450" />
+
+Accumulate score by collecting coins:
+
+<img src="https://github.com/nelkalm/restless_crypt/blob/main/restless-crypt-gif/accummulate-coins_AdobeExpress.gif" width="450" />
+
+Game over when player's health reaches 0:
+
+<img src="https://github.com/nelkalm/restless_crypt/blob/main/restless-crypt-gif/game-over_AdobeExpress.gif" width="450" />
 
 ## Playing the game
 To play the game, you have to execute the 'main.py' file with python. The command to do this will be like:
