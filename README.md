@@ -21,15 +21,15 @@ The World object is initialized and then used to create Character objects: the m
 
 Fire fairy magic balls at enemies:
 
-<img src="https://github.com/nelkalm/restless_crypt/blob/main/restless-crypt-gif/hitting-enemies_AdobeExpress.gif" width="450" />
+<img src="https://github.com/nelkalm/restless_crypt/blob/main/restless-crypt-gif/hitting-enemies_AdobeExpress.gif" width="600" />
 
 Accumulate score by collecting coins:
 
-<img src="https://github.com/nelkalm/restless_crypt/blob/main/restless-crypt-gif/accummulate-coins_AdobeExpress.gif" width="450" />
+<img src="https://github.com/nelkalm/restless_crypt/blob/main/restless-crypt-gif/accummulate-coins_AdobeExpress.gif" width="600" />
 
 Game over when player's health reaches 0:
 
-<img src="https://github.com/nelkalm/restless_crypt/blob/main/restless-crypt-gif/game-over_AdobeExpress.gif" width="450" />
+<img src="https://github.com/nelkalm/restless_crypt/blob/main/restless-crypt-gif/game-over_AdobeExpress.gif" width="600" />
 
 ## Playing the game
 To play the game, you have to execute the 'main.py' file with python. The command to do this will be like:
